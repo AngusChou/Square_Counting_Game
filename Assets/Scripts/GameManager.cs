@@ -35,9 +35,9 @@ public class GameManager : MonoBehaviour
 
     int GenerateCubeCount(int level)
     {
-        int baseAmount = 3 + Mathf.FloorToInt(Mathf.Pow(level, 0.7f));
-        int randomness = Random.Range(0, Mathf.FloorToInt(Mathf.Pow(level, 0.5f)) + 1);
-        return baseAmount + randomness;
+        int baseAmount = Random.Range(level, level + 3);
+        int randomness = Random.Range(baseAmount, baseAmount + level);
+        return randomness;
     }
 
     public void SubmitGuess()
@@ -46,20 +46,24 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-
-        if (int.TryParse(guessInput.text, out int guess))
+        // int answer = int.Parse(guessInput.text);
+        if (!int.TryParse(guessInput.text, out int answer))
         {
-            if (guess == currentCubeCount)
-            {
-                level++;
-                Debug.Log("Correct! Moving to level " + level);
-                RestartLevel();
-            } else
-            {
-                Debug.Log("Wrong! You died. Back to level 0...");
-                level = 1;
-                RestartLevel();
-            }
+            return;
+        }
+        if (answer == currentCubeCount)
+        {
+            level++;
+            Debug.Log("Correct!");
+            waitingForGuess = false;
+            RestartLevel();
+        }
+        else
+        {
+            level = 1;
+            Debug.Log("Wrong!");
+            waitingForGuess = false;
+            RestartLevel();
         }
     }
 
@@ -70,6 +74,7 @@ public class GameManager : MonoBehaviour
             Destroy(cube);
         }
 
+        spawner.ResetCubes();
         guessInput.text = "";
         StartCoroutine(LevelRoutine());
     }
@@ -77,9 +82,6 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (waitingForGuess && Input.GetKeyDown(KeyCode.Return))
-        {
-            SubmitGuess();
-        }
+        guessInput.gameObject.SetActive(waitingForGuess);
     }
 }

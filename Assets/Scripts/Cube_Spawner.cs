@@ -55,6 +55,11 @@ public class Cube_Spawner : MonoBehaviour
         return spawnedCubes;
     }
 
+    public void ResetCubes()
+    {
+        stackHeights = new int[gridSize, gridSize];
+    }
+
     private Vector3 ComputeCubePosition(int gx, int gz, int height)
     {
         Vector3 basePosition = platform.position;
